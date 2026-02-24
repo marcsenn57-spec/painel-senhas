@@ -1,6 +1,10 @@
 // Importe o Firebase (adicione estas linhas no topo do script.js)
 import { initializeApp } from "https://www.gstatic.com";
-import { getDatabase, ref, set, onValue } from "https://www.gstatic.com";
+import { getDatabase, ref, set, onValue, get } from "https://www.gstatic.com";
+
+
+// O restante do seu código (firebaseConfig, etc) continua igual abaixo...
+
 
 // COLE AQUI O SEU firebaseConfig QUE VOCÊ COPIOU DO SITE
 const firebaseConfig = {
