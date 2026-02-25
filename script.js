@@ -1,12 +1,7 @@
-// Importe o Firebase (adicione estas linhas no topo do script.js)
 import { initializeApp } from "https://www.gstatic.com";
 import { getDatabase, ref, set, onValue, get } from "https://www.gstatic.com";
 
-
-// O restante do seu código (firebaseConfig, etc) continua igual abaixo...
-
-
-// COLE AQUI O SEU firebaseConfig QUE VOCÊ COPIOU DO SITE
+// 2. CONFIGURAÇÃO DO SEU FIREBASE
 const firebaseConfig = {
   apiKey: "AIzaSyAni301REp5IfvRTxxHLxCFWkdPr8Qrt68",
   authDomain: "painel-de-senhas-23.firebaseapp.com",
@@ -21,13 +16,13 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// ESCUTAR MUDANÇAS (Para a TV atualizar quando o celular mandar)
+// 3. ESCUTAR MUDANÇAS (Para a TV atualizar)
 onValue(ref(db, 'atendimento'), (snapshot) => {
     const dados = snapshot.val();
     if (dados) {
         document.getElementById('senha-atual').innerText = dados.senha;
         document.getElementById('sala-atual').innerText = dados.sala;
-        // Só fala se for uma senha nova (para não repetir ao abrir a página)
+        
         if (window.ultimaSenhaChamada !== dados.senha) {
             falar(dados.senha, dados.sala);
             window.ultimaSenhaChamada = dados.senha;
@@ -35,19 +30,21 @@ onValue(ref(db, 'atendimento'), (snapshot) => {
     }
 });
 
-// FUNÇÃO PARA O CELULAR CHAMAR A PRÓXIMA
+// 4. FUNÇÃO PARA O CELULAR CHAMAR A PRÓXIMA (VINCULADA À WINDOW)
 window.proximaSenha = function(prefixo) {
     const sala = document.getElementById('selecionar-sala').value;
+    const contadorRef = ref(db, 'contadores/' + sala);
     
-    // Pegar o último número do banco para somar +1
-    onValue(ref(db, 'contadores/' + sala), (snapshot) => {
+    get(contadorRef).then((snapshot) => {
         let num = snapshot.val() || 1;
         const novaSenha = prefixo + "-" + String(num).padStart(3, '0');
         
-        // Envia para o banco de dados (Isso faz a TV atualizar na hora!)
+        // Atualiza o Firebase (TV vai mudar automaticamente pelo onValue acima)
         set(ref(db, 'atendimento'), { senha: novaSenha, sala: sala });
         set(ref(db, 'contadores/' + sala), num + 1);
-    }, { onlyOnce: true });
+    }).catch((error) => {
+        console.error("Erro ao buscar contador:", error);
+    });
 };
 
 function falar(senha, sala) {
