@@ -1,4 +1,4 @@
-// 1. CORREÇÃO DOS LINKS (AGORA COMPLETOS)
+// 1. CORREÇÃO DOS LINKS (AGORA COMPLETOS) script.js
 import { initializeApp } from "https://www.gstatic.com";
 import { getDatabase, ref, set, onValue, get } from "https://www.gstatic.com";
 
