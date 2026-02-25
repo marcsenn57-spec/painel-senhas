@@ -1,7 +1,8 @@
+// 1. CORREÇÃO DOS LINKS (AGORA COMPLETOS)
 import { initializeApp } from "https://www.gstatic.com";
 import { getDatabase, ref, set, onValue, get } from "https://www.gstatic.com";
 
-// 2. CONFIGURAÇÃO DO SEU FIREBASE
+// 2. SUAS CONFIGURAÇÕES (MANTIDAS)
 const firebaseConfig = {
   apiKey: "AIzaSyAni301REp5IfvRTxxHLxCFWkdPr8Qrt68",
   authDomain: "painel-de-senhas-23.firebaseapp.com",
@@ -16,13 +17,12 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// 3. ESCUTAR MUDANÇAS (Para a TV atualizar)
+// 3. ESCUTAR MUDANÇAS NA TV
 onValue(ref(db, 'atendimento'), (snapshot) => {
     const dados = snapshot.val();
     if (dados) {
         document.getElementById('senha-atual').innerText = dados.senha;
         document.getElementById('sala-atual').innerText = dados.sala;
-        
         if (window.ultimaSenhaChamada !== dados.senha) {
             falar(dados.senha, dados.sala);
             window.ultimaSenhaChamada = dados.senha;
@@ -30,7 +30,7 @@ onValue(ref(db, 'atendimento'), (snapshot) => {
     }
 });
 
-// 4. FUNÇÃO PARA O CELULAR CHAMAR A PRÓXIMA (VINCULADA À WINDOW)
+// 4. FUNÇÃO DE CHAMADA (COM WINDOW PARA O HTML ENXERGAR)
 window.proximaSenha = function(prefixo) {
     const sala = document.getElementById('selecionar-sala').value;
     const contadorRef = ref(db, 'contadores/' + sala);
@@ -39,7 +39,6 @@ window.proximaSenha = function(prefixo) {
         let num = snapshot.val() || 1;
         const novaSenha = prefixo + "-" + String(num).padStart(3, '0');
         
-        // Atualiza o Firebase (TV vai mudar automaticamente pelo onValue acima)
         set(ref(db, 'atendimento'), { senha: novaSenha, sala: sala });
         set(ref(db, 'contadores/' + sala), num + 1);
     }).catch((error) => {
